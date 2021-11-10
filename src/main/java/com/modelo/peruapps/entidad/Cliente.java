@@ -36,6 +36,7 @@ public class Cliente implements Serializable{
 	
 	@Temporal(TemporalType.DATE)
 	@JsonFormat(pattern = "yyyy-MM-dd",timezone = "America/Lima")
+	@Column(name="fecha_nacimiento")
 	private Date fechaNacimiento;
 
 
