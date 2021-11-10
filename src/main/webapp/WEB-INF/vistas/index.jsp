@@ -8,8 +8,9 @@
     
      <!-- VALIDACIONES Y JQUERY -->
     <script type="text/javascript" src="js/jquery.min.js"></script>
- 	<script type="text/javascript" src="js/bootstrapValidator.js"></script>
-	<script type="text/javascript" src="js/global.js"></script>
+    <script type="text/javascript" src="js/global.js"></script>
+ 	
+	
        
  	<!-- bootstrap -->
  	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
@@ -22,6 +23,8 @@
 	<script type="text/javascript" src="https://cdn.datatables.net/v/dt/dt-1.10.24/datatables.min.js"></script>
 	<script type="text/javascript" src="https://cdn.datatables.net/select/1.3.3/js/dataTables.select.min.js"></script>    
 	<link href="https://cdn.jsdelivr.net/npm/simple-datatables@latest/dist/style.css" rel="stylesheet" />
+	
+	<script type="text/javascript" src="js/bootstrapValidator.js"></script>
 	      
     <link rel="shortcut icon" href="img/logo.png">
     
@@ -102,16 +105,19 @@
                           <div class="card-body">
                             
                             <!-- id de cliente -->
-                            <input class="form-control" id="id_cliente" name="idCliente" maxlength="8" type="text"/>
+                            <input class="form-control" id="id_cliente" name="idCliente" maxlength="8" type="hidden"/>
                             
                                 <div class="form-group mt-3">
+                                	<label>Nombres completos</label>
                                     <input type="text" class="form-control" name="nombre" id="id_nombre" placeholder="Nombres Completos" required>
                                   </div>
                                   <div class="form-group mt-3">
+                                  	<label>Correo</label>
                                     <input class="form-control" name="correo" id="id_correo" placeholder="Correo" required>
                                   </div>
 
                                   <div class="form-group mt-3">
+                                  	<label>Contraseña</label>
                                     <input class="form-control" name="password" id="id_password" placeholder="Contraseña" required type="password">
                                   </div>
 
@@ -176,7 +182,7 @@ if (validator.isValid()) {
   
   formData.append("idCliente", $("#id_cliente").val());
   formData.append("nombre", $("#id_nombre").val());
-  formData.append("correo", $("#id_reg_descripcion").val());
+  formData.append("correo", $("#id_correo").val());
   formData.append("password", $("#id_password").val());
   formData.append("fechaNacimiento", $("#id_fecha").val());
   
@@ -184,9 +190,9 @@ if (validator.isValid()) {
   
   $.ajax({
     type: "POST",
-    url: "actualizaNosotros", 
+    url: "actualizaCliente", 
     data: formData,
-   // enctype: 'multipart/form-data',
+   
     contentType: false,
     processData: false,
     cache: false,
@@ -210,6 +216,15 @@ return false;
 });
 
 
+function limpiar(){				
+
+	
+	$("#id_nombre").val('');
+	$("#id_correo").val('');	
+	$("#id_password").val('');
+	$("#id_fecha").val(' ');
+
+}
 
 
 <!-- EDITAR DATOS DE CLIENTES -->
@@ -226,10 +241,52 @@ function editar(idCliente,nombre,correo,password,fechaNacimiento){
 
 }
 
+function calcularEdad(fecha) {
+    var hoy = new Date();
+    var cumpleanos = new Date(fecha);
+    var edad = hoy.getFullYear() - cumpleanos.getFullYear();
+    var m = hoy.getMonth() - cumpleanos.getMonth();
+
+    if (m < 0 || (m === 0 && hoy.getDate() < cumpleanos.getDate())) {
+        edad--;
+    }
+
+    return edad;
+}
 
 
 
+$('#id_modal_actualiza').on('hide.bs.modal', function (e) {
+	var validator = $('#form-act').data('bootstrapValidator');
+    validator.validate();
+	
+    validator.resetForm();
+    limpiar();
+	
+});
 
+
+//ELIMINAR
+
+function eliminar(id){	
+	mostrarMensajeConfirmacion(MSG_ELIMINAR, accionEliminar,null,id);
+}
+
+
+function accionEliminar(id){	
+	  $.ajax({
+	        type: "POST",
+	        url: "eliminaCliente", 
+	        data: {"id":id},
+	        success: function(data){
+	      	  agregarGrilla(data.lista);
+	      	  mostrarMensaje(data.mensaje);
+	        },
+	        error: function(){
+	      	  mostrarMensaje(MSG_ERROR);
+	        }
+	   });
+	}	    	    	
 
 
 
@@ -270,15 +327,14 @@ function agregarGrilla(lista){
   				{data: "nombre"},
   				{data: "correo"},
   				{data: "fechaNacimiento"},
-  				{data: "password"},
-  				/*{data: function(row, type, val, meta){
-					var salida = row.obtenerEdad;
-					
+  				
+  				{data: function(row, type, val, meta){
+					var salida = calcularEdad(row.fechaNacimiento);
 						
 					return salida;
-				},className:'text-center'},*/
+				},className:'text-center'},
   				{data: function(row, type, val, meta){
-  					var salida='<button class="table-btn-crud" id="botoneditar" data-bs-toggle="modal" data-bs-target="#id_modal_actualiza" onclick="editar(\''+row.idCliente + '\',\'' + row.nombre + '\',\'' + row.correo+ '\',\'' +row.fechaNacimiento+ '\',\'' +row.password+ '\')" ><i class="bi bi-pencil"></i></button>';
+  					var salida='<button class="table-btn-crud" id="botoneditar" data-bs-toggle="modal" data-bs-target="#id_modal_actualiza" onclick="editar(\''+row.idCliente + '\',\'' + row.nombre + '\',\'' + row.correo+ '\',\'' +row.password+ '\',\'' +row.fechaNacimiento+ '\')" ><i class="bi bi-pencil"></i></button>';
   					
   				    <!--var salida='<button type="button" style="width: 90px" class="btn btn-warning btn-sm" onclick="eliminar(\'' + row.idAlumno + '\')">Eliminar</button>';-->
   					return salida;
@@ -303,7 +359,68 @@ function agregarGrilla(lista){
   }
 
 
-
+$('#form-act').bootstrapValidator({
+	  message: 'This value is not valid',
+	  feedbackIcons: {
+	      valid: 'glyphicon glyphicon-ok',
+	      invalid: 'glyphicon glyphicon-remove',
+	      validating: 'glyphicon glyphicon-refresh'
+	  },
+	  fields: {
+	  	nombre: {
+	  		selector : '#id_nombre',
+	          validators: {
+	              notEmpty: {
+	                  message: 'El nombre es un campo obligatorio'
+	              },
+	              stringLength :{
+	              	message:'El nombre es de 2 a 100 caracteres',
+	              	min : 2,
+	              	max : 100
+	              }
+	          }
+	      },
+	      
+	      correo : {
+				selector : '#id_correo',
+				validators : {
+					notEmpty : {
+						message : 'Ingrese su correo electrónico'
+					},
+					emailAddress : {
+						message : 'El correo no es válido'
+					}
+				}
+			},
+			 password : {
+					selector : '#id_password',
+					validators : {
+						 notEmpty: {
+			                  message: 'Ingrese su contraseña'
+			              },
+			              stringLength :{
+			              	message:'La contraseña es de 2 a 20 caracteres',
+			              	min : 2,
+			              	max : 20
+			              }
+					}
+				},
+	      
+	      fechaNacimiento: {
+				selector: '#id_fecha',
+				validators: {
+					notEmpty: {
+						message: '*Seleccione la fecha de Nacimiento'
+					}
+				}
+			}
+			
+			
+	     
+	    
+	     
+	  }   
+	});
 
 
 

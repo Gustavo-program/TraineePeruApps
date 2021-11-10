@@ -39,23 +39,6 @@ public class Cliente implements Serializable{
 	@Column(name="fecha_nacimiento")
 	private Date fechaNacimiento;
 
-	/*
-	public long getObtenerEdad() {
-		/*DateTimeFormatter fmt = DateTimeFormatter.ofPattern("yyyy-MM-dd");
-		LocalDate fechaNac = LocalDate.parse(getFechaNacimiento().toString(), fmt);
-		LocalDate ahora = LocalDate.now();
-
-		Period periodo = Period.between(fechaNac, ahora);
-		return periodo.getYears();
-		
-		 LocalDate hoy= LocalDate.now();
-	     LocalDate cumple= LocalDate.of(getFechaNacimiento().getYear(),getFechaNacimiento().getMonth(),getFechaNacimiento().getDay());
-	     long edad= ChronoUnit.YEARS.between(cumple, hoy); 
-	     return edad;
-		
-	}
-	*/
-
 	public int getIdCliente() {
 		return idCliente;
 	}

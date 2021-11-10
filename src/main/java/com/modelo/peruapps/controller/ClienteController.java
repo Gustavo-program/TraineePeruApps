@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -37,35 +38,6 @@ public class ClienteController {
 	}
 
 	
-	/*
-
-	@ResponseBody
-	@RequestMapping("/registraCliente")
-	public Map<String, Object> registro(Cliente obj){
-		Map<String, Object> salida=new HashMap<>();
-		try {
-			
-			Cliente objSalida = clienteService.insertaActualizaClientes(obj);
-			
-			if(objSalida==null) {
-				salida.put("MENSAJE", "Error en el Registro");
-			}
-			else {
-				salida.put("MENSAJE", "Registro exitoso");
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-			salida.put("MENSAJE", "Se genero un error");
-		}
-		finally {
-			List<Cliente> lista=clienteService.listaCliente();
-			salida.put("lista",lista);
-		}
-		return salida;
-	}
-	
-	*/
 	
 	
 	
@@ -121,6 +93,95 @@ public class ClienteController {
 				
 				return salida;
 				
+			}
+			
+			
+			
+			
+			
+			/*ACTUALIZAR*/
+			
+			@ResponseBody
+			@RequestMapping(value = "/actualizaCliente", method = RequestMethod.POST)
+			public Map<String, Object> actualizaCliente(
+					@RequestParam("idCliente") String idCliente,
+					@RequestParam("nombre") String nombre,
+					@RequestParam("correo") String correo,
+					@RequestParam("password") String password,
+					@RequestParam("fechaNacimiento") String fecha
+					){
+				
+				Map<String, Object> salida = new HashMap<>();
+				try {
+					
+					Cliente obj = new Cliente();
+					obj.setIdCliente(Integer.parseInt(idCliente));
+					obj.setNombre(nombre);
+					obj.setCorreo(correo);
+					obj.setPassword(password);
+					
+					Date date1 =new  SimpleDateFormat("yyyy-MM-dd").parse(fecha);
+					obj.setFechaNacimiento(date1);
+					
+					Cliente objSalida = clienteService.insertaActualizaClientes(obj);
+					
+					if(objSalida == null) {
+						salida.put("MENSAJE", "Error en la Actualización");
+					}
+					else {
+						
+						salida.put("MENSAJE", "Actualización Exitosa");
+						salida.put("inicio", "verIndex");//si actualiza la pagina lo borro
+					}
+					
+				} 
+				
+				catch (Exception e) {
+					e.printStackTrace();
+					salida.put("MENSAJE", "Se generó un error");
+				}
+				
+				finally {
+					List<Cliente> lista=clienteService.listaCliente();
+					salida.put("lista", lista);
+				}
+				
+				return salida;
+				
+			}
+			
+			
+			
+			/*ELIMINAR*/
+			
+
+			@ResponseBody
+			@RequestMapping("eliminaCliente")
+			public Map<String, Object> eliminaCliente(int id){
+				Map<String, Object> salida=new HashMap<String, Object>();
+				
+				try {
+					Optional<Cliente> opt= clienteService.obtienePorId(id);
+					if(opt.isPresent()) {
+						clienteService.eliminaCliente(id);
+						salida.put("mensaje", "Eliminación Exitosa");
+						
+					}
+					else {
+						salida.put("mensaje", "Eliminación Errónea");
+					}
+						
+				} 		
+				catch (Exception e) {
+					e.printStackTrace();
+					salida.put("mensaje", "Se generó un error");
+				}
+				finally {
+					List<Cliente> lista=clienteService.listaCliente();
+					salida.put("lista", lista);	
+				}
+					
+				return salida;
 			}
 			
 	
