@@ -173,3 +173,8 @@ a {
 .modal-dialog{
 	max-width: 800px !important;
 }
+
+.linkreg{
+	text-decoration:none;
+	color:blue;
+}

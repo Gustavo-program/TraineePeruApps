@@ -17,5 +17,11 @@ public interface ClienteRepository extends JpaRepository<Cliente, Integer>{
 	
 	@Query("Select a from Cliente a where nombre like :fil")
 	public abstract List<Cliente> consultaCliente(@Param("fil") String filtro);
+	
+	
+	
+	/*LOGUEARSE*/
+	@Query("Select x from Cliente x where x.correo = :#{#usu.correo} and x.password = :#{#usu.password}")
+	public abstract Cliente login(@Param(value = "usu") Cliente bean);
 
 }

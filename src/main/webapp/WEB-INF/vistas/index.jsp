@@ -1,3 +1,4 @@
+<jsp:include page="intranetValida.jsp" />
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -33,7 +34,7 @@
 <body>
     <div class="cerrar">
         <div class="cerrar2">
-            <a href="verLogin"><button type="button" class="btn-close" aria-label="Close"></button></a>
+            <a href="logout"><button type="button" class="btn-close" aria-label="Close"></button></a>
             
         </div>
     </div>

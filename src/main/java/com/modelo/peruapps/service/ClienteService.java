@@ -14,5 +14,8 @@ public interface ClienteService {
 	public abstract Optional<Cliente> obtienePorId(int idCliente);
 	public abstract void eliminaCliente(int id);
 	public abstract List<Cliente> consultaCliente(String filtro);
+	
+	
+	public abstract Cliente login(Cliente bean);
 
 }

@@ -41,6 +41,11 @@ public class ClienteServiceImpl implements ClienteService{
 		return clienteRepository.consultaCliente(filtro);
 	}
 
+	@Override
+	public Cliente login(Cliente bean) {
+		return clienteRepository.login(bean);
+	}
+
 	
 	
 }
